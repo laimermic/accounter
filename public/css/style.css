@@ -1,3 +1,7 @@
-body { 
+body {
   background-color: orange;
+  margin: 0;
+  display: flex;
+  align-content: center;
+  justify-content: center;
 }
