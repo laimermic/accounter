@@ -5,9 +5,6 @@
     <title>Accounter</title>
     <link rel="stylesheet" href="./css/style.css" />
     <link rel="icon" type="image" href="./favicon.ico" />
-    <!-- this link is magically provided by socket.io -->
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="./js/client.js"></script>
   </head>
 
   <body>
@@ -15,9 +12,14 @@
     <div class="accountWrapper">
       <div class="accountHeading">Income</div>
       <div class="accountHeading">Expenses</div>
-      <div class="accountIncome"></div>
-      <div class="accountExpenses"></div>
-      <div class="accountTotal"></div>
+      <div class="accountIncome accountTableWrapper"></div>
+      <div class="accountExpenses accountTableWrapper"></div>
+      <div class="accountTotal">
+        <span class="accountTotalspan"></span>
+      </div>
     </div>
+    <!-- this link is magically provided by socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="./js/client.js"></script>
   </body>
 </html>

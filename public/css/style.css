@@ -14,21 +14,56 @@ h1 {
   text-align: center;
   margin-bottom: 0.5em;
 }
+
 .accountWrapper {
   width: 80%;
   display: grid;
   grid-template-columns: 50% 50%;
+  grid-column-gap: 0 !important;
+  grid-row-gap: 0;
   grid-template-rows: auto;
   column-gap: 0.2em;
 }
 
 .accountTotal {
-  column-span: 2;
+  column-span: all;
 }
 
 .accountHeading {
   border: 2px solid black;
+  border-collapse: collapse;
   text-align: center;
   background-color: rgb(0, 150, 255);
   color: #ffff;
+}
+
+th {
+  color: rgb(0, 150, 255);
+  background-color: rgb(255, 255, 255);
+}
+
+.accountTotalspan {
+  font-weight: bolder;
+}
+
+.accountTotal {
+  text-align: center;
+  border: 2px solid black;
+  border-collapse: collapse;
+  grid-column: 1 / span 2;
+}
+
+.accountTableWrapper table {
+  width: 100%;
+  text-align: center;
+  border-collapse: collapse;
+  border: 2px solid black;
+}
+
+.accountTableWrapper table tr td {
+  border: 2px solid black;
+}
+
+.accountTableWrapper table tr th {
+  border: 2px solid black;
 }
