@@ -8,10 +8,6 @@ const MongoClient = require("mongodb").MongoClient;
 const connectionUrl = "mongodb://mongoadmin:mypasswd@10.115.3.9:8017";
 app.use(express.static("public"));
 
-// app.get("/", (req, res) => {
-//   res.sendFile(__dirname + "/public/index.html");
-// });
-
 io.on("connection", (socket) => {
   socket.client._packet;
   console.log(socket.handshake.address + " connected");
@@ -24,10 +20,11 @@ io.on("connection", (socket) => {
     console.log(
       "Client " +
         socket.handshake.address +
-        "requested Data...\n Connecting to MongoDB..."
+        " requested Data...\nConnecting to MongoDB..."
     );
     MongoClient.connect(connectionUrl, (err, db) => {
       if (err) throw err;
+      console.log("Connection successful");
       let dataBase = db.db("mydb");
       dataBase
         .collection("accounter")
@@ -35,10 +32,27 @@ io.on("connection", (socket) => {
         .toArray((err, result) => {
           if (err) throw err;
           console.log(result);
-          dataBase.close();
         });
     });
   });
+
+  socket.on("insertIncomeData", (data) => {
+    console.log("Client " + socket.handshake.address + " inserts Data...\nConnecting to MongoDB...");
+    MongoClient.connect(connectionUrl, (err,db) => {
+      if (err) throw err;
+      console.log("Connection successfull");
+      let dataBase = db.db("mydb");
+      dataBase.collection("accounterIncome")
+      .insertOne({
+        amount: data.amount,
+        usage: data.usage,
+        date: data.date
+      },(err,res) => {
+        if (err) throw err;
+        console.log(res);
+      })
+    })
+  })
 });
 
 server.listen(8080, () => {

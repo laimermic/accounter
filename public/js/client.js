@@ -117,3 +117,8 @@ let testTable = {
 renderIncomeTable(testTable);
 renderExpensesTable(testTable);
 rendertotal(testTable);
+
+function insertIncome(data) {
+  socket.emit("insertIncomeData",data);
+}
+
