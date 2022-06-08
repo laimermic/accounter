@@ -33,6 +33,7 @@ h1 {
   text-align: center;
   background-color: rgb(0, 150, 255);
   color: #ffff;
+  font-weight: bold;
 }
 
 th {
@@ -47,7 +48,6 @@ th {
 .accountTotal {
   text-align: center;
   border: 2px solid black;
-  border-top: 1px solid black;
   border-collapse: collapse;
   grid-column: 1 / span 2;
 }
@@ -55,17 +55,36 @@ th {
 .accountTableWrapper table {
   width: 100%;
   text-align: center;
-  border-collapse: collapse;
+  border-collapse: separate;
   -webkit-border-horizontal-spacing: 0;
-  -webkit-border-vertical-spacing: 0.2em;
-  border: 0;
+  -webkit-border-vertical-spacing: 0.5em;
 }
 
 .accountTableWrapper table tr {
-  border-top: 1px solid black;
-  border-bottom: 1px solid black;
+  /* border-top: 1px solid black;
+  border-bottom: 1px solid black; */
+  border-collapse: collapse;
+  border: 1px solid black;
+  transition: 0.5s;
 }
 
 .accountTableWrapper table tr:hover {
-  background-color: gray
+  background-color: rgb(230, 230, 230);
+}
+
+.accountTableWrapper table tr td {
+  border-bottom: 1px solid black;
+  border-top: 1px solid black;
+}
+
+.bdLeft {
+  border-left: 1px solid black;
+}
+
+.bdRight {
+  border-right: 1px solid black;
+}
+
+.addTd {
+  border: 2px solid rgb(0, 150, 255);
 }

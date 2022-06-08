@@ -19,14 +19,15 @@ function renderIncomeTable(data) {
   headtr.appendChild(dateth);
 
   thead.appendChild(headtr);
-
   table.appendChild(thead);
+
   //Display every transaction in its own tr
   data.income.forEach((transaction) => {
     let tr = document.createElement("tr");
 
     let amounttd = document.createElement("td");
-    amounttd.innerHTML = transaction.amount;
+    amounttd.innerHTML = transaction.amount + " €";
+    amounttd.classList.add("bdLeft");
     tr.appendChild(amounttd);
 
     let usagetd = document.createElement("td");
@@ -35,9 +36,19 @@ function renderIncomeTable(data) {
 
     let datetd = document.createElement("td");
     datetd.innerHTML = transaction.date;
+    datetd.classList.add("bdRight");
     tr.appendChild(datetd);
     tbody.appendChild(tr);
   });
+
+  //Add Button
+  let addtr = document.createElement("tr");
+  let addtd = document.createElement("td");
+  addtd.innerHTML = "+";
+  addtd.classList.add("addTd");
+  addtd.setAttribute("colspan", 3);
+  addtr.appendChild(addtd);
+  tbody.appendChild(addtr);
   table.appendChild(tbody);
   document.getElementsByClassName("accountIncome")[0].appendChild(table);
 }
@@ -48,24 +59,30 @@ function renderExpensesTable(data) {
   let tbody = document.createElement("tbody");
 
   //Header for date, usage and amount
-  let dateth = document.createElement("th");
-  dateth.innerText = "Date";
-  thead.appendChild(dateth);
+  let headtr = document.createElement("tr");
+
+  let amountth = document.createElement("th");
+  amountth.innerText = "Amount";
+  headtr.appendChild(amountth);
 
   let usageth = document.createElement("th");
   usageth.innerText = "Usage";
-  thead.appendChild(usageth);
+  headtr.appendChild(usageth);
 
-  let amounttd = document.createElement("th");
-  amounttd.innerText = "Amount";
-  thead.appendChild(amounttd);
+  let dateth = document.createElement("th");
+  dateth.innerText = "Date";
+  headtr.appendChild(dateth);
+
+  thead.appendChild(headtr);
+  table.appendChild(thead);
 
   //Display every transaction in its own tr
   data.expenses.forEach((transaction) => {
     let tr = document.createElement("tr");
 
     let amounttd = document.createElement("td");
-    amounttd.innerHTML = transaction.amount;
+    amounttd.innerHTML = transaction.amount + " €";
+    amounttd.classList.add("bdLeft");
     tr.appendChild(amounttd);
 
     let usagetd = document.createElement("td");
@@ -74,9 +91,19 @@ function renderExpensesTable(data) {
 
     let datetd = document.createElement("td");
     datetd.innerHTML = transaction.date;
+    datetd.classList.add("bdRight");
     tr.appendChild(datetd);
     tbody.appendChild(tr);
   });
+
+  //Add Button
+  let addtr = document.createElement("tr");
+  let addtd = document.createElement("td");
+  addtd.innerHTML = "+";
+  addtd.classList.add("addTd");
+  addtr.appendChild(addtd);
+  tbody.appendChild(addtr);
+
   table.appendChild(tbody);
   document.getElementsByClassName("accountExpenses")[0].appendChild(table);
 }
@@ -110,7 +137,10 @@ socket.on("connect", () => {
 });
 
 let testTable = {
-  income: [{ amount: 48, usage: "Food", date: "18.1.2022" }],
+  income: [
+    { amount: 420.69, usage: "Food", date: "18.1.2022" },
+    { amount: 69, usage: "Kindergeld", date: "17.4.1978" },
+  ],
   expenses: [{ amount: 28, usage: "Dog", date: "19.2.2022" }],
 };
 
@@ -119,6 +149,5 @@ renderExpensesTable(testTable);
 rendertotal(testTable);
 
 function insertIncome(data) {
-  socket.emit("insertIncomeData",data);
+  socket.emit("insertIncomeData", data);
 }
-

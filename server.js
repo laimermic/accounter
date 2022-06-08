@@ -26,7 +26,7 @@ io.on("connection", (socket) => {
       if (err) throw err;
       console.log("Connection successful");
       let dataBase = db.db("mydb");
-      dataBase
+      var result = dataBase
         .collection("accounter")
         .find({})
         .toArray((err, result) => {
@@ -37,22 +37,28 @@ io.on("connection", (socket) => {
   });
 
   socket.on("insertIncomeData", (data) => {
-    console.log("Client " + socket.handshake.address + " inserts Data...\nConnecting to MongoDB...");
-    MongoClient.connect(connectionUrl, (err,db) => {
+    console.log(
+      "Client " +
+        socket.handshake.address +
+        " inserts Data...\nConnecting to MongoDB..."
+    );
+    MongoClient.connect(connectionUrl, (err, db) => {
       if (err) throw err;
       console.log("Connection successfull");
       let dataBase = db.db("mydb");
-      dataBase.collection("accounterIncome")
-      .insertOne({
-        amount: data.amount,
-        usage: data.usage,
-        date: data.date
-      },(err,res) => {
-        if (err) throw err;
-        console.log(res);
-      })
-    })
-  })
+      dataBase.collection("accounterIncome").insertOne(
+        {
+          amount: data.amount,
+          usage: data.usage,
+          date: data.date,
+        },
+        (err, res) => {
+          if (err) throw err;
+          console.log(res);
+        }
+      );
+    });
+  });
 });
 
 server.listen(8080, () => {
