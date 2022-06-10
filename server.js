@@ -35,7 +35,6 @@ io.on("connection", (socket) => {
         accounterExpenses.find({}).toArray(function (err, result2) {
           //console.log(result2);
           response.expenses = result2;
-          console.log(response);
           socket.emit("receiveData", response);
         });
       });
@@ -65,6 +64,22 @@ io.on("connection", (socket) => {
           console.log(res);
         }
       );
+    });
+  });
+
+  socket.on("deleteIncome", (data) => {
+    console.log(
+      "Client " +
+        socket.handshake.address +
+        " tries to delete Income transaction " +
+        data
+    );
+    console.log("Connecting to MongoDB...");
+    MongoClient.connect(connectionUrl, (err, db) => {
+      if (err) throw err;
+      console.log("Connection successfull");
+      let dataBase = db.db("mydb");
+      dataBase.collection("accounterIncome").deleteOne({ _id: data });
     });
   });
 });

@@ -1,3 +1,31 @@
+/*
+Global Variables
+*/
+
+let keyeventlistener = null;
+
+/*
+Realtime Communication connection
+*/
+
+console.log("Connecting to AccounterServices...");
+const socket = io();
+socket.on("connect", () => {
+  console.log("Connected!");
+  console.log("Requesting Data...");
+  socket.emit("queryData");
+  socket.on("receiveData", (result) => {
+    console.log("Data Received!");
+    console.log(result);
+    renderIncomeTable(result);
+    renderExpensesTable(result);
+    rendertotal(result);
+  });
+  socket.on("delete", (data) => {
+    alert("Deletion successful!");
+  });
+});
+
 function renderIncomeTable(data) {
   let table = document.createElement("table");
   let thead = document.createElement("thead");
@@ -49,8 +77,12 @@ function renderIncomeTable(data) {
     let deltd = document.createElement("td");
     deltd.classList.add("bdRight");
     let delbtn = document.createElement("img");
-    delbtn.src = "./img/x.jpg";
+    delbtn.src = "./img/x.png";
+    delbtn.height = 24;
     delbtn.classList.add("delbtn");
+    delbtn.onclick = function () {
+      deleteincome(transaction._id);
+    };
     deltd.appendChild(delbtn);
     tr.onmouseover = function () {
       rowhover(delbtn);
@@ -132,6 +164,12 @@ function renderExpensesTable(data) {
   document.getElementsByClassName("accountExpenses")[0].appendChild(table);
 }
 
+function deleteincome(id) {
+  if (confirm("Do you really want to delete this transaction?")) {
+    socket.emit("deleteIncome", id);
+  }
+}
+
 function rendertotal(data) {
   let total = 0;
   data.income.forEach((transaction) => {
@@ -167,6 +205,7 @@ Object.values(document.getElementsByClassName("addPopupWrapper")).forEach(
     element.addEventListener("click", (e) => {
       if (e.target == e.currentTarget) {
         element.style.display = "none";
+        removeEventListener("keyup", keyeventlistener);
       }
     });
   }
@@ -175,16 +214,15 @@ Object.values(document.getElementsByClassName("addPopupWrapper")).forEach(
 function renderAddOverlay(type) {
   document.getElementsByClassName("addPopupWrapper")[0].style.display = "flex";
   document.getElementsByClassName("addHead")[0].innerHTML = "Add " + type;
-}
+  if (keyeventlistener != null) {
+    removeEventListener("keyup", keyeventlistener);
+  }
 
-console.log("Connecting to AccounterServices...");
-const socket = io();
-socket.on("connect", () => {
-  socket.emit("queryData");
-  socket.on("receiveData", (result) => {
-    console.log(result);
-    renderIncomeTable(result);
-    renderExpensesTable(result);
-    rendertotal(result);
+  keyeventlistener = document.addEventListener("keyup", (e) => {
+    if (e.key == "Escape") {
+      document.getElementsByClassName("addPopupWrapper")[0].style.display =
+        "none";
+      removeEventListener("keyup", keyeventlistener);
+    }
   });
-});
+}
