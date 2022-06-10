@@ -17,22 +17,30 @@ io.on("connection", (socket) => {
   });
 
   socket.on("queryData", () => {
+    let response = {};
     console.log(
       "Client " +
         socket.handshake.address +
         " requested Data...\nConnecting to MongoDB..."
     );
-    MongoClient.connect(connectionUrl, (err, db) => {
+    MongoClient.connect(connectionUrl, async (err, db) => {
       if (err) throw err;
       console.log("Connection successful");
       let dataBase = db.db("mydb");
-      var result = dataBase
-        .collection("accounter")
-        .find({})
-        .toArray((err, result) => {
-          if (err) throw err;
-          console.log(result);
+      let accounterIncome = dataBase.collection("accounterIncome");
+      accounterIncome.find({}).toArray(function (err, result) {
+        //console.log(result);
+        response.income = result;
+        let accounterExpenses = dataBase.collection("accounterExpenses");
+        accounterExpenses.find({}).toArray(function (err, result2) {
+          //console.log(result2);
+          response.expenses = result2;
+          console.log(response);
+          socket.emit("receiveData", response);
         });
+      });
+      //console.log(result);
+      //await result.forEach(console.log(console.dir));
     });
   });
 

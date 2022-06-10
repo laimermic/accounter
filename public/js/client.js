@@ -8,15 +8,23 @@ function renderIncomeTable(data) {
 
   let amountth = document.createElement("th");
   amountth.innerText = "Amount";
+  amountth.classList.add("amountcol");
   headtr.appendChild(amountth);
 
   let usageth = document.createElement("th");
   usageth.innerText = "Usage";
+  usageth.classList.add("usagecol");
   headtr.appendChild(usageth);
 
   let dateth = document.createElement("th");
   dateth.innerText = "Date";
+  dateth.classList.add("datecol");
   headtr.appendChild(dateth);
+
+  let buttondummyth = document.createElement("th");
+  buttondummyth.innerHTML = "";
+  buttondummyth.classList.add("delcol");
+  headtr.appendChild(buttondummyth);
 
   thead.appendChild(headtr);
   table.appendChild(thead);
@@ -26,7 +34,7 @@ function renderIncomeTable(data) {
     let tr = document.createElement("tr");
 
     let amounttd = document.createElement("td");
-    amounttd.innerHTML = transaction.amount + " €";
+    amounttd.innerHTML = transaction.amount.toFixed(2) + " €";
     amounttd.classList.add("bdLeft");
     tr.appendChild(amounttd);
 
@@ -36,21 +44,44 @@ function renderIncomeTable(data) {
 
     let datetd = document.createElement("td");
     datetd.innerHTML = transaction.date;
-    datetd.classList.add("bdRight");
     tr.appendChild(datetd);
+
+    let deltd = document.createElement("td");
+    deltd.classList.add("bdRight");
+    let delbtn = document.createElement("img");
+    delbtn.src = "./img/x.jpg";
+    delbtn.classList.add("delbtn");
+    deltd.appendChild(delbtn);
+    tr.onmouseover = function () {
+      rowhover(delbtn);
+    };
+
+    tr.onmouseout = function () {
+      rowunhover(delbtn);
+    };
+
+    tr.appendChild(deltd);
+
     tbody.appendChild(tr);
+
+    //add a tr for nice and clean design
+    let dummytr = document.createElement("tr");
+    dummytr.classList.add("spacerrow");
+    tbody.appendChild(dummytr);
   });
 
-  //Add Button
-  let addtr = document.createElement("tr");
-  let addtd = document.createElement("td");
-  addtd.innerHTML = "+";
-  addtd.classList.add("addTd");
-  addtd.setAttribute("colspan", 3);
-  addtr.appendChild(addtd);
-  tbody.appendChild(addtr);
   table.appendChild(tbody);
+  document.getElementsByClassName("accountIncome")[0].innerHTML = "";
   document.getElementsByClassName("accountIncome")[0].appendChild(table);
+}
+
+function rowhover(delbtn) {
+  delbtn.style.display = "block";
+}
+
+function rowunhover(delbtn) {
+  delbtn.style.display = "none";
+  console.log("left!");
 }
 
 function renderExpensesTable(data) {
@@ -81,9 +112,9 @@ function renderExpensesTable(data) {
     let tr = document.createElement("tr");
 
     let amounttd = document.createElement("td");
-    amounttd.innerHTML = transaction.amount + " €";
+    amounttd.innerHTML = transaction.amount.toFixed(2) + " €";
     amounttd.classList.add("bdLeft");
-    tr.appendChild(amounttd);
+    tr.appendChild(amounttd.toFixed(2));
 
     let usagetd = document.createElement("td");
     usagetd.innerHTML = transaction.usage;
@@ -96,15 +127,8 @@ function renderExpensesTable(data) {
     tbody.appendChild(tr);
   });
 
-  //Add Button
-  let addtr = document.createElement("tr");
-  let addtd = document.createElement("td");
-  addtd.innerHTML = "+";
-  addtd.classList.add("addTd");
-  addtr.appendChild(addtd);
-  tbody.appendChild(addtr);
-
   table.appendChild(tbody);
+  document.getElementsByClassName("accountExpenses")[0].innerHTML = "";
   document.getElementsByClassName("accountExpenses")[0].appendChild(table);
 }
 
@@ -118,7 +142,7 @@ function rendertotal(data) {
   });
 
   document.getElementsByClassName("accountTotalspan")[0].innerHTML =
-    "Total: " + total;
+    "Total: " + total.toFixed(2) + " €";
   if (total < 0) {
     document.getElementsByClassName("accountTotalspan")[0].style.color = "red";
   } else if (total == 0) {
@@ -130,24 +154,37 @@ function rendertotal(data) {
   }
 }
 
+function addIncome() {
+  renderAddOverlay("income");
+}
+
+function addExpense() {
+  renderAddOverlay("expense");
+}
+
+Object.values(document.getElementsByClassName("addPopupWrapper")).forEach(
+  (element) => {
+    element.addEventListener("click", (e) => {
+      if (e.target == e.currentTarget) {
+        element.style.display = "none";
+      }
+    });
+  }
+);
+
+function renderAddOverlay(type) {
+  document.getElementsByClassName("addPopupWrapper")[0].style.display = "flex";
+  document.getElementsByClassName("addHead")[0].innerHTML = "Add " + type;
+}
+
+console.log("Connecting to AccounterServices...");
 const socket = io();
 socket.on("connect", () => {
-  socket.emit("queryData", "I hätt gern die Daten");
-  socket.on("");
+  socket.emit("queryData");
+  socket.on("receiveData", (result) => {
+    console.log(result);
+    renderIncomeTable(result);
+    renderExpensesTable(result);
+    rendertotal(result);
+  });
 });
-
-let testTable = {
-  income: [
-    { amount: 420.69, usage: "Food", date: "18.1.2022" },
-    { amount: 69, usage: "Kindergeld", date: "17.4.1978" },
-  ],
-  expenses: [{ amount: 28, usage: "Dog", date: "19.2.2022" }],
-};
-
-renderIncomeTable(testTable);
-renderExpensesTable(testTable);
-rendertotal(testTable);
-
-function insertIncome(data) {
-  socket.emit("insertIncomeData", data);
-}

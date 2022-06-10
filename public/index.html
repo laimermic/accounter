@@ -14,9 +14,18 @@
       <div class="accountHeading">Expenses</div>
       <div class="accountIncome accountTableWrapper"></div>
       <div class="accountExpenses accountTableWrapper"></div>
+      <div class="addButtonWrapper">
+        <button class="addButton" onclick="addIncome()">Add income</button>
+      </div>
+      <div class="addButtonWrapper">
+        <button class="addButton" onclick="addExpense()">Add expense</button>
+      </div>
       <div class="accountTotal">
         <span class="accountTotalspan"></span>
       </div>
+    </div>
+    <div class="addPopupWrapper">
+      <div class="addPopup"><span class="addHead"></span></div>
     </div>
     <!-- this link is magically provided by socket.io -->
     <script src="/socket.io/socket.io.js"></script>
