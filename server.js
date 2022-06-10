@@ -25,21 +25,19 @@ io.on("connection", (socket) => {
     );
     MongoClient.connect(connectionUrl, async (err, db) => {
       if (err) throw err;
-      console.log("Connection successful");
+      console.log("Connection successfull!");
+      console.log("Serving Transactions...");
       let dataBase = db.db("mydb");
       let accounterIncome = dataBase.collection("accounterIncome");
       accounterIncome.find({}).toArray(function (err, result) {
-        //console.log(result);
         response.income = result;
         let accounterExpenses = dataBase.collection("accounterExpenses");
         accounterExpenses.find({}).toArray(function (err, result2) {
-          //console.log(result2);
           response.expenses = result2;
           socket.emit("receiveData", response);
+          console.log("Transactions served!");
         });
       });
-      //console.log(result);
-      //await result.forEach(console.log(console.dir));
     });
   });
 
@@ -51,7 +49,7 @@ io.on("connection", (socket) => {
     );
     MongoClient.connect(connectionUrl, (err, db) => {
       if (err) throw err;
-      console.log("Connection successfull");
+      console.log("Connection successfull!");
       let dataBase = db.db("mydb");
       dataBase.collection("accounterIncome").insertOne(
         {
