@@ -45,7 +45,7 @@ io.on("connection", (socket) => {
     console.log(
       "Client " +
         socket.handshake.address +
-        " inserts Data...\nConnecting to MongoDB..."
+        " inserts Income Transactions...\nConnecting to MongoDB..."
     );
     MongoClient.connect(connectionUrl, (err, db) => {
       if (err) throw err;
@@ -64,6 +64,10 @@ io.on("connection", (socket) => {
       );
     });
   });
+
+  socket.on("insertExpenses", (data) => {
+    console.log("Client ")
+  })
 
   socket.on("deleteIncome", (data) => {
     console.log(
