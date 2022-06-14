@@ -225,4 +225,11 @@ function renderAddOverlay(type) {
       removeEventListener("keyup", keyeventlistener);
     }
   });
+  document.getElementsByClassName("addSubmit")[0].innerHTML = "Add " + type;
+  document
+    .getElementsByClassName("cancelSubmit")[0]
+    .addEventListener("click", () => {
+      document.getElementsByClassName("addPopupWrapper")[0].style.display =
+        "none";
+    });
 }
