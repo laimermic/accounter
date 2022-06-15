@@ -60,6 +60,7 @@ th {
   width: 100%;
   text-align: center;
   table-layout: fixed;
+  border-collapse: collapse;
 }
 
 .delbtn {
@@ -80,6 +81,7 @@ th {
 }
 .spacerrow {
   border: none !important;
+  height: 0.7em !important;
 }
 
 /*

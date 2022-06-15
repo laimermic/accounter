@@ -201,7 +201,7 @@ function addExpense() {
   renderAddOverlay("expense");
 }
 
-//Popup closing
+//Popup closing eventlistener
 Object.values(document.getElementsByClassName("addPopupWrapper")).forEach(
   (element) => {
     element.addEventListener("click", (e) => {
@@ -223,8 +223,7 @@ function renderAddOverlay(type) {
 
   keyeventlistener = document.addEventListener("keyup", (e) => {
     if (e.key == "Escape") {
-      document.getElementsByClassName("addPopupWrapper")[0].style.display =
-        "none";
+      closePopup();
       removeEventListener("keyup", keyeventlistener);
     }
   });
@@ -237,8 +236,7 @@ function renderAddOverlay(type) {
   document
     .getElementsByClassName("cancelSubmit")[0]
     .addEventListener("click", () => {
-      document.getElementsByClassName("addPopupWrapper")[0].style.display =
-        "none";
+      closePopup();
     });
 }
 
@@ -262,13 +260,21 @@ function insertData(type) {
   switch (type) {
     case "income":
       socket.emit("insertIncomeData", data);
-      console.log("Sending income...");
+      console.log("Sending income: ", data);
       break;
     case "expense":
       socket.emit("insertExpenseData", data);
-      console.log("Sending expense");
+      console.log("Sending expense: ", data);
       break;
     default:
       console.log("Error occured...");
   }
+  closePopup();
+}
+
+function closePopup() {
+  document.getElementsByClassName("addPopupWrapper")[0].style.display = "none";
+  document.getElementById("num").value = null;
+  document.getElementById("date").value = null;
+  document.getElementById("usage").value = null;
 }
