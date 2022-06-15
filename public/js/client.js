@@ -16,7 +16,6 @@ socket.on("connect", () => {
   socket.emit("queryData");
   socket.on("receiveData", (result) => {
     console.log("Data Received!");
-    console.log(result);
     renderIncomeTable(result);
     renderExpensesTable(result);
     rendertotal(result);
@@ -60,6 +59,7 @@ function renderIncomeTable(data) {
   //Display every transaction in its own tr
   data.income.forEach((transaction) => {
     let tr = document.createElement("tr");
+    tr.classList.add("dataRow");
 
     let amounttd = document.createElement("td");
     amounttd.innerHTML = parseFloat(transaction.amount).toFixed(2) + " €";
@@ -77,8 +77,7 @@ function renderIncomeTable(data) {
     let deltd = document.createElement("td");
     deltd.classList.add("bdRight");
     let delbtn = document.createElement("img");
-    delbtn.src = "./img/x.png";
-    delbtn.height = 24;
+    delbtn.src = "./img/xmark.svg";
     delbtn.classList.add("delbtn");
     delbtn.onclick = function () {
       deleteincome(transaction._id);
@@ -149,6 +148,7 @@ function renderExpensesTable(data) {
   //Display every transaction in its own tr
   data.expenses.forEach((transaction) => {
     let tr = document.createElement("tr");
+    tr.classList.add("dataRow");
 
     let amounttd = document.createElement("td");
     amounttd.innerHTML = parseFloat(transaction.amount).toFixed(2) + " €";
@@ -166,11 +166,10 @@ function renderExpensesTable(data) {
     let deltd = document.createElement("td");
     deltd.classList.add("bdRight");
     let delbtn = document.createElement("img");
-    delbtn.src = "./img/x.png";
-    delbtn.height = 24;
+    delbtn.src = "./img/xmark.svg";
     delbtn.classList.add("delbtn");
     delbtn.onclick = function () {
-      deleteincome(transaction._id);
+      deleteExpense(transaction._id);
     };
     deltd.appendChild(delbtn);
     tr.onmouseover = function () {
@@ -196,9 +195,17 @@ function renderExpensesTable(data) {
   document.getElementsByClassName("accountExpenses")[0].appendChild(table);
 }
 
+function edittd(td)
+
 function deleteincome(id) {
   if (confirm("Do you really want to delete this transaction?")) {
     socket.emit("deleteIncome", id);
+  }
+}
+
+function deleteExpense(id) {
+  if (confirm("Do you really want to delete this transaction?")) {
+    socket.emit("deleteExpense", id);
   }
 }
 
@@ -303,6 +310,7 @@ function insertData(type) {
       console.log("Error occured...");
   }
   closePopup();
+  socket.emit("queryData");
 }
 
 function closePopup() {
