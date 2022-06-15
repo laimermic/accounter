@@ -195,7 +195,7 @@ function renderExpensesTable(data) {
   document.getElementsByClassName("accountExpenses")[0].appendChild(table);
 }
 
-function edittd(td)
+function edittd(td, oldvalue, type) {}
 
 function deleteincome(id) {
   if (confirm("Do you really want to delete this transaction?")) {

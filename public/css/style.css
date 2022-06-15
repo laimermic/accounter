@@ -1,5 +1,4 @@
 body {
-  background-color: rgb(255, 255, 255);
   margin: 0;
   font-family: "Anonymous Pro", monospace;
   color: rgb(0, 0, 0);
@@ -7,6 +6,8 @@ body {
   flex-flow: column;
   align-items: center;
   font-size: 1em;
+  background-image: url(../img/background.svg);
+  background-size: cover;
 }
 
 body button {
@@ -19,6 +20,10 @@ h1 {
   text-align: center;
   margin-bottom: 0.5em;
 }
+
+/* 
+Main Table
+*/
 
 .accountWrapper {
   width: 80%;
@@ -65,10 +70,15 @@ th {
 
 .delbtn {
   display: none;
-  margin-top: 1px;
+  height: 1.3em;
+  transition: 0.2s;
+  filter: invert(0%) sepia(0%) saturate(7485%) hue-rotate(20deg)
+    brightness(104%) contrast(104%);
 }
 .delbtn:hover {
   cursor: pointer;
+  filter: invert(18%) sepia(96%) saturate(6529%) hue-rotate(358deg)
+    brightness(104%) contrast(113%);
 }
 
 .accountTableWrapper table tr {
@@ -79,6 +89,7 @@ th {
 .accountTableWrapper table tr:hover {
   background-color: rgb(230, 230, 230);
 }
+
 .spacerrow {
   border: none !important;
   height: 0.7em !important;
@@ -88,20 +99,24 @@ th {
 Columns
 */
 .delcol {
-  width: 10%;
+  width: 5%;
 }
 
 .amountcol {
-  width: 20%;
+  width: 30%;
 }
 
 .usagecol {
-  width: 40%;
+  width: 30%;
 }
 
 .datecol {
-  width: 30%;
+  width: 35%;
 }
+
+/* 
+Popup
+ */
 
 .addButtonWrapper {
   width: 100%;
@@ -180,14 +195,20 @@ input {
   font-size: 1em;
   border: none;
   border-bottom: solid 2px gray;
+  transition: all 0.5s ease-out;
 }
 
 input:hover {
-  background-color: rgb(230, 230, 230);
+  background-color: rgb(240, 240, 240);
+}
+
+input:focus + label {
+  color: rgb(0, 150, 255);
+  transition: all 0.5s;
 }
 
 input:focus {
-  background-color: rgb(230, 230, 230);
+  transition: c;
   border: none;
   outline: none;
   border-bottom: solid 2px rgb(0, 150, 255);

@@ -5,6 +5,7 @@ const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
 const MongoClient = require("mongodb").MongoClient;
+const ObjectId = require("mongodb").ObjectId;
 const connectionUrl = "mongodb://mongoadmin:mypasswd@10.115.3.9:8017";
 app.use(express.static("public"));
 
@@ -25,6 +26,7 @@ io.on("connection", (socket) => {
         accounterExpenses.find({}).toArray(function (err, result2) {
           response.expenses = result2;
           socket.broadcast.emit("receiveData", response);
+          socket.emit("receiveData", response);
           console.log("Transactions served!");
         });
       });
@@ -122,7 +124,7 @@ io.on("connection", (socket) => {
       let dataBase = db.db("mydb");
       dataBase
         .collection("accounterIncome")
-        .deleteOne({ _id: data }, (res, err) => {
+        .deleteOne({ _id: new ObjectId(data) }, (err, result) => {
           if (err) throw err;
           console.log("Deletion successfull!");
           broadcastdata();
@@ -144,7 +146,7 @@ io.on("connection", (socket) => {
       let dataBase = db.db("mydb");
       dataBase
         .collection("accounterExpenses")
-        .deleteOne({ _id: data }, (res, err) => {
+        .deleteOne({ _id: new ObjectId(data) }, (err, res) => {
           if (err) throw err;
           console.log("Deletion successfull!");
           broadcastdata();
@@ -166,11 +168,16 @@ io.on("connection", (socket) => {
       let dataBase = db.db("mydb");
       dataBase
         .collection("accounterIncome")
-        .updateOne({ _id: data._id }, data, { upsert: false }, (err, res) => {
-          if (err) throw err;
-          console.log("Update successful");
-          broadcastdata();
-        });
+        .updateOne(
+          { _id: new ObjectId(data._id) },
+          data,
+          { upsert: false },
+          (err, res) => {
+            if (err) throw err;
+            console.log("Update successful");
+            broadcastdata();
+          }
+        );
     });
   });
 
@@ -188,11 +195,16 @@ io.on("connection", (socket) => {
       let dataBase = db.db("mydb");
       dataBase
         .collection("accounterExpenses")
-        .updateOne({ _id: data._id }, data, { upsert: false }, (err, res) => {
-          if (err) throw err;
-          console.log("Update successful");
-          broadcastdata();
-        });
+        .updateOne(
+          { _id: new ObjectId(data._id) },
+          data,
+          { upsert: false },
+          (err, res) => {
+            if (err) throw err;
+            console.log("Update successful");
+            broadcastdata();
+          }
+        );
     });
   });
 });
