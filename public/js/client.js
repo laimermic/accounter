@@ -62,7 +62,7 @@ function renderIncomeTable(data) {
     let tr = document.createElement("tr");
 
     let amounttd = document.createElement("td");
-    amounttd.innerHTML = transaction.amount.toFixed(2) + " €";
+    amounttd.innerHTML = parseFloat(transaction.amount).toFixed(2) + " €";
     amounttd.classList.add("bdLeft");
     tr.appendChild(amounttd);
 
@@ -113,7 +113,6 @@ function rowhover(delbtn) {
 
 function rowunhover(delbtn) {
   delbtn.style.display = "none";
-  console.log("left!");
 }
 
 function renderExpensesTable(data) {
@@ -144,9 +143,9 @@ function renderExpensesTable(data) {
     let tr = document.createElement("tr");
 
     let amounttd = document.createElement("td");
-    amounttd.innerHTML = transaction.amount.toFixed(2) + " €";
+    amounttd.innerHTML = parseFloat(transaction.amount).toFixed(2) + " €";
     amounttd.classList.add("bdLeft");
-    tr.appendChild(amounttd.toFixed(2));
+    tr.appendChild(amounttd);
 
     let usagetd = document.createElement("td");
     usagetd.innerHTML = transaction.usage;
@@ -171,12 +170,12 @@ function deleteincome(id) {
 }
 
 function rendertotal(data) {
-  let total = 0;
+  let total = 0.0;
   data.income.forEach((transaction) => {
-    total += transaction.amount;
+    total += parseFloat(transaction.amount);
   });
   data.expenses.forEach((transaction) => {
-    total -= transaction.amount;
+    total -= parseFloat(transaction.amount);
   });
 
   document.getElementsByClassName("accountTotalspan")[0].innerHTML =
@@ -192,14 +191,17 @@ function rendertotal(data) {
   }
 }
 
+//Onclick adding income
 function addIncome() {
   renderAddOverlay("income");
 }
 
+//Onclick adding expense
 function addExpense() {
   renderAddOverlay("expense");
 }
 
+//Popup closing
 Object.values(document.getElementsByClassName("addPopupWrapper")).forEach(
   (element) => {
     element.addEventListener("click", (e) => {
@@ -211,6 +213,7 @@ Object.values(document.getElementsByClassName("addPopupWrapper")).forEach(
   }
 );
 
+//Popup rendering
 function renderAddOverlay(type) {
   document.getElementsByClassName("addPopupWrapper")[0].style.display = "flex";
   document.getElementsByClassName("addHead")[0].innerHTML = "Add " + type;
@@ -227,9 +230,45 @@ function renderAddOverlay(type) {
   });
   document.getElementsByClassName("addSubmit")[0].innerHTML = "Add " + type;
   document
+    .getElementsByClassName("addSubmit")[0]
+    .addEventListener("click", () => {
+      insertData(type);
+    });
+  document
     .getElementsByClassName("cancelSubmit")[0]
     .addEventListener("click", () => {
       document.getElementsByClassName("addPopupWrapper")[0].style.display =
         "none";
     });
+}
+
+function insertData(type) {
+  if (!document.getElementById("num").value) {
+    alert("Enter a amount to proceed!");
+    return;
+  }
+  let amountValue = parseFloat(document.getElementById("num").value);
+  if (!document.getElementById("usage").value) {
+    alert("Enter a usage to proceed!");
+    return;
+  }
+  let usageValue = document.getElementById("usage").value;
+  if (!document.getElementById("date").value) {
+    alert("Enter a date to proceed!");
+    return;
+  }
+  let dateValue = document.getElementById("date").value;
+  let data = { amount: amountValue, usage: usageValue, date: dateValue };
+  switch (type) {
+    case "income":
+      socket.emit("insertIncomeData", data);
+      console.log("Sending income...");
+      break;
+    case "expense":
+      socket.emit("insertExpenseData", data);
+      console.log("Sending expense");
+      break;
+    default:
+      console.log("Error occured...");
+  }
 }
