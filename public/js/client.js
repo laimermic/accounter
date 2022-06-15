@@ -125,15 +125,23 @@ function renderExpensesTable(data) {
 
   let amountth = document.createElement("th");
   amountth.innerText = "Amount";
+  amountth.classList.add("amountcol");
   headtr.appendChild(amountth);
 
   let usageth = document.createElement("th");
   usageth.innerText = "Usage";
+  usageth.classList.add("usagecol");
   headtr.appendChild(usageth);
 
   let dateth = document.createElement("th");
   dateth.innerText = "Date";
+  dateth.classList.add("datecol");
   headtr.appendChild(dateth);
+
+  let buttondummyth = document.createElement("th");
+  buttondummyth.innerHTML = "";
+  buttondummyth.classList.add("delcol");
+  headtr.appendChild(buttondummyth);
 
   thead.appendChild(headtr);
   table.appendChild(thead);
@@ -153,9 +161,34 @@ function renderExpensesTable(data) {
 
     let datetd = document.createElement("td");
     datetd.innerHTML = transaction.date;
-    datetd.classList.add("bdRight");
     tr.appendChild(datetd);
+
+    let deltd = document.createElement("td");
+    deltd.classList.add("bdRight");
+    let delbtn = document.createElement("img");
+    delbtn.src = "./img/x.png";
+    delbtn.height = 24;
+    delbtn.classList.add("delbtn");
+    delbtn.onclick = function () {
+      deleteincome(transaction._id);
+    };
+    deltd.appendChild(delbtn);
+    tr.onmouseover = function () {
+      rowhover(delbtn);
+    };
+
+    tr.onmouseout = function () {
+      rowunhover(delbtn);
+    };
+
+    tr.appendChild(deltd);
+
     tbody.appendChild(tr);
+
+    //add a tr for nice and clean design
+    let dummytr = document.createElement("tr");
+    dummytr.classList.add("spacerrow");
+    tbody.appendChild(dummytr);
   });
 
   table.appendChild(tbody);
