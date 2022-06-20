@@ -28,7 +28,7 @@ socket.on("connect", () => {
 });
 socket.on("disconnect", () => {
   console.log("Connection lost!");
-  document.getElementById("statusText").innerHTML = "Trying to reconnect...";
+  document.getElementById("statusText").innerHTML = "Reconnecting to AccounterServices...";
   document.getElementsByClassName("loadingwrapper")[0].style.display = "grid";
 });
 
