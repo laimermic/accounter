@@ -35,6 +35,7 @@ Main Table
 
 .accountTotal {
   column-span: all;
+  border-radius: 0.2em;
 }
 
 .accountHeading {
@@ -50,6 +51,7 @@ th {
   color: rgb(0, 150, 255);
   background-color: rgb(255, 255, 255);
 }
+
 .accountTotalspan {
   font-weight: bolder;
 }
@@ -66,6 +68,10 @@ th {
   text-align: center;
   table-layout: fixed;
   border-collapse: collapse;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .delbtn {
@@ -265,4 +271,20 @@ label {
 
 #statusText {
   color: white;
+}
+
+.editinput {
+  text-align: center;
+  border: none;
+  border-radius: 0.5em;
+}
+
+.editinput:focus {
+  background-color: rgb(150, 200, 255);
+  border: none;
+  font-weight: bold;
+}
+
+.showspan {
+  cursor: text;
 }

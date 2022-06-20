@@ -197,7 +197,7 @@ io.on("connection", (socket) => {
         .collection("accounterExpenses")
         .updateOne(
           { _id: new ObjectId(data._id) },
-          data,
+          { $set: data },
           { upsert: false },
           (err, res) => {
             if (err) throw err;
