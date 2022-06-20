@@ -11,10 +11,12 @@ Realtime Communication connection
 console.log("Connecting to AccounterServices...");
 const socket = io();
 socket.on("connect", () => {
+  document.getElementById("statusText").innerHTML = "Requesting transactions...";
   console.log("Connected!");
   console.log("Requesting Data...");
   socket.emit("queryData");
   socket.on("receiveData", (result) => {
+    document.getElementsByClassName("loadingwrapper")[0].style.display = "none";
     console.log("Data Received!");
     renderIncomeTable(result);
     renderExpensesTable(result);
@@ -23,6 +25,11 @@ socket.on("connect", () => {
   socket.on("delete", (data) => {
     alert("Deletion successful!");
   });
+});
+socket.on("disconnect", () => {
+  console.log("Connection lost!");
+  document.getElementById("statusText").innerHTML = "Trying to reconnect...";
+  document.getElementsByClassName("loadingwrapper")[0].style.display = "grid";
 });
 
 function renderIncomeTable(data) {
@@ -154,13 +161,46 @@ function renderExpensesTable(data) {
     amounttd.innerHTML = parseFloat(transaction.amount).toFixed(2) + " €";
     amounttd.classList.add("bdLeft");
     tr.appendChild(amounttd);
-
+    
     let usagetd = document.createElement("td");
-    usagetd.innerHTML = transaction.usage;
+    let usageinput = document.createElement("input");
+    let usagespan = document.createElement("span");
+    usageinput.type = "text";
+    usageinput.classList.add("editinput");
+    usageinput.min = 0;
+    usageinput.name = "usage";
+    usageinput.value = transaction.usage
+    usageinput.step = 0.01;
+    usageinput.style.display = "none";
+    usagespan.innerHTML = transaction.usage
+    usagespan.classList.add("showspan");
+    usagetd.appendChild(usageinput);
+    usagetd.appendChild(usagespan);
+    usagetd.ondblclick = function() {
+      edittd(this,"usage",transaction._id);
+    }
     tr.appendChild(usagetd);
 
     let datetd = document.createElement("td");
-    datetd.innerHTML = transaction.date;
+    let dateinput = document.createElement("input");
+    let datespan = document.createElement("span");
+    dateinput.value = transaction.date;
+    dateinput.type = "date";
+    dateinput.classList.add("editinput");
+    dateinput.min = 0;
+    dateinput.name = "date";
+    dateinput.value = transaction.date;
+    dateinput.step = 0.01;
+    dateinput.style.display = "none";
+    let date = new Date(transaction.date);
+    dateinput.value = date;
+    datespan.innerHTML = transaction.date;
+    datespan.classList.add("showspan");
+    datetd.appendChild(dateinput);
+    datetd.appendChild(datespan);
+    datetd.ondblclick = function() {
+      edittd(this,"date",transaction._id);
+    }
     tr.appendChild(datetd);
 
     let deltd = document.createElement("td");
@@ -195,7 +235,21 @@ function renderExpensesTable(data) {
   document.getElementsByClassName("accountExpenses")[0].appendChild(table);
 }
 
-function edittd(td, oldvalue, type) {}
+function edittd(td, column, id) {
+  td.getElementsByClassName("editinput")[0].style.display = "block";
+  td.getElementsByClassName("showspan")[0].style.display = "none";
+
+  window.addEventListener("click",(e) => {
+    if(!td.contains(e.target)) {
+      finishedit(td,column,id)
+    }
+  })
+}
+
+function finishedit(td, column, id) {
+  td.getElementsByClassName("editinput")[0].style.display = "none";
+  td.getElementsByClassName("showspan")[0].style.display = "block";
+}
 
 function deleteincome(id) {
   if (confirm("Do you really want to delete this transaction?")) {
