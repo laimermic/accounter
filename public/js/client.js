@@ -4,7 +4,7 @@ Global Variables
 
 let keyeventlistener = null;
 let clickoutsideevent = null;
-
+let entereventlistener = null;
 /*
 Realtime Communication connection
 */
@@ -209,7 +209,7 @@ function renderExpensesTable(data) {
     amountinput.classList.add("editinput");
     amountinput.min = 0;
     amountinput.name = "usage";
-    amountinput.value = parseFloat(transaction.amount).toFixed(2) + " €";
+    amountinput.value = parseFloat(transaction.amount).toFixed(2);
     amountinput.step = 0.01;
     amountinput.style.display = "none";
     amountspan.innerHTML = parseFloat(transaction.amount).toFixed(2) + " €";
@@ -301,6 +301,12 @@ function editexpensetd(td, column, transaction) {
     }
   });
 
+  entereventlistener = document.body.addEventListener("keyup", (e) => {
+    if (e.keyCode == 13) {
+      finishexpenseedit(td, column, transaction);
+    }
+  });
+
   keyeventlistener = document.body.addEventListener("keyup", (e) => {
     if (e.key == "Escape") {
       td.getElementsByClassName("editinput")[0].style.display = "none";
@@ -317,10 +323,14 @@ function editincometd(td, column, transaction) {
   clickoutsideevent = document.body.addEventListener("click", (e) => {
     if (!td.contains(e.target)) {
       finishincomeedit(td, column, transaction);
-      clickoutsideevent = null;
     }
   });
 
+  entereventlistener = document.body.addEventListener("keyup", (e) => {
+    if (e.keyCode == 13) {
+      finishincomeedit(td, column, transaction);
+    }
+  });
   keyeventlistener = document.body.addEventListener("keyup", (e) => {
     if (e.key == "Escape") {
       td.getElementsByClassName("editinput")[0].style.display = "none";

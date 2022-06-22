@@ -15,7 +15,10 @@ io.on("connection", (socket) => {
     let response = {};
     console.log("broadcastdata has been called!\nConnecting to MongoDB...");
     MongoClient.connect(connectionUrl, async (err, db) => {
-      if (err) throw err;
+      if (err) {
+        sendStatus(false, "Can not connect to database!");
+        throw err;
+      }
       console.log("Connection successfull!");
       console.log("Serving Transactions...");
       let dataBase = db.db("mydb");
@@ -40,7 +43,7 @@ io.on("connection", (socket) => {
     console.log(socket.handshake.address + " disconnected!");
   });
 
-  //Sending full Data 
+  //Sending full Data
   socket.on("queryData", () => {
     let response = {};
     console.log(
@@ -49,7 +52,10 @@ io.on("connection", (socket) => {
         " requested Data\nConnecting to MongoDB..."
     );
     MongoClient.connect(connectionUrl, async (err, db) => {
-      if (err) throw err;
+      if (err) {
+        sendStatus(false, "Can not connect to database!");
+        throw err;
+      }
       console.log("Connection successfull!");
       console.log("Serving Transactions...");
       let dataBase = db.db("mydb");
@@ -74,7 +80,10 @@ io.on("connection", (socket) => {
         " inserts Income Transactions...\nConnecting to MongoDB..."
     );
     MongoClient.connect(connectionUrl, (err, db) => {
-      if (err) throw err;
+      if (err) {
+        sendStatus(false, "Can not connect to database!");
+        throw err;
+      }
       console.log("Connection successfull!");
       let dataBase = db.db("mydb");
       dataBase.collection("accounterIncome").insertOne(
@@ -102,7 +111,10 @@ io.on("connection", (socket) => {
         ")\nConnecting to MongoDB..."
     );
     MongoClient.connect(connectionUrl, (err, db) => {
-      if (err) throw err;
+      if (err) {
+        sendStatus(false, "Can not connect to database!");
+        throw err;
+      }
       console.log("Connection successfull! Inserting Transaction now...");
       let dataBase = db.db("mydb");
       dataBase.collection("accounterExpenses").insertOne(data, (err, res) => {
@@ -123,13 +135,19 @@ io.on("connection", (socket) => {
     );
     console.log("Connecting to MongoDB...");
     MongoClient.connect(connectionUrl, (err, db) => {
-      if (err) throw err;
+      if (err) {
+        sendStatus(false, "Can not connect to database!");
+        throw err;
+      }
       console.log("Connection successfull! Executing delete command...");
       let dataBase = db.db("mydb");
       dataBase
         .collection("accounterIncome")
         .deleteOne({ _id: new ObjectId(data) }, (err, result) => {
-          if (err) throw err;
+          if (err) {
+            sendStatus(false, "Ran into an error while deleting!");
+            throw err;
+          }
           console.log("Deletion successfull!");
           broadcastdata();
         });
@@ -146,43 +164,54 @@ io.on("connection", (socket) => {
     );
     console.log("Connecting to MongoDB...");
     MongoClient.connect(connectionUrl, (err, db) => {
-      if (err) throw err;
+      if (err) {
+        sendStatus(false, "Can not connect to database!");
+        throw err;
+      }
       console.log("Connection successfull");
       let dataBase = db.db("mydb");
       dataBase
         .collection("accounterExpenses")
         .deleteOne({ _id: new ObjectId(data) }, (err, res) => {
-          if (err) throw err;
+          if (err) {
+            sendStatus(false, "Ran into an error while deleting!");
+            throw err;
+          }
           console.log("Deletion successfull!");
           broadcastdata();
         });
     });
   });
 
-
   //Edit income
   socket.on("editIncome", (data) => {
     console.log(
       "Client " +
         socket.handshake.address +
-        "tries to edit Income transaction " +
+        " tries to edit Income transaction " +
         data._id +
         "\nConnecting to MongoDB..."
     );
     let transid = data._id;
     delete data._id;
     MongoClient.connect(connectionUrl, (err, db) => {
-      if (err) throw err;
+      if (err) {
+        sendStatus(false, "Can not connect to database!");
+        throw err;
+      }
       console.log("Connection successfull! Executing update command...");
       let dataBase = db.db("mydb");
       dataBase
         .collection("accounterIncome")
         .updateOne(
           { _id: new ObjectId(transid) },
-          {$set: data},
+          { $set: data },
           { upsert: false },
           (err, res) => {
-            if (err) throw err;
+            if (err) {
+              sendStatus(false, "Ran into an error while updating data!");
+              throw err;
+            }
             console.log("Update successful");
             broadcastdata();
           }
@@ -195,14 +224,17 @@ io.on("connection", (socket) => {
     console.log(
       "Client " +
         socket.handshake.address +
-        "tries to edit Expense transaction " +
+        " tries to edit Expense transaction " +
         data._id +
         "\nConnecting to MongoDB..."
     );
     let transid = data._id;
     delete data._id;
     MongoClient.connect(connectionUrl, (err, db) => {
-      if (err) throw err;
+      if (err) {
+        sendStatus(false, "Can not connect to database!");
+        throw err;
+      }
       console.log("Connection successfull! Executing update command...");
       let dataBase = db.db("mydb");
       dataBase
@@ -212,13 +244,22 @@ io.on("connection", (socket) => {
           { $set: data },
           { upsert: false },
           (err, res) => {
-            if (err) throw err;
+            if (err) {
+              sendStatus(false, "Ran into an error while updating data!");
+              throw err;
+            }
             console.log("Update successful");
             broadcastdata();
           }
         );
     });
   });
+
+  function sendStatus(status, msg) {
+    let response = { status: status, msg: msg };
+    console.log("Sending response...");
+    socket.emit("responseMsg", response);
+  }
 });
 
 //Start server
