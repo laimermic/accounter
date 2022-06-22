@@ -78,7 +78,7 @@ function renderIncomeTable(data) {
     amountinput.classList.add("editinput");
     amountinput.min = 0;
     amountinput.name = "usage";
-    amountinput.value = parseFloat(transaction.amount).toFixed(2) + " €";
+    amountinput.value = parseFloat(transaction.amount).toFixed(2);
     amountinput.step = 0.01;
     amountinput.style.display = "none";
     amountspan.innerHTML = parseFloat(transaction.amount).toFixed(2) + " €";
@@ -152,7 +152,7 @@ function renderIncomeTable(data) {
     let dummytr = document.createElement("tr");
     dummytr.classList.add("spacerrow");
     tbody.appendChild(dummytr);
-  })
+  });
   table.appendChild(tbody);
   document.getElementsByClassName("accountIncome")[0].innerHTML = "";
   document.getElementsByClassName("accountIncome")[0].appendChild(table);
@@ -294,14 +294,14 @@ function editexpensetd(td, column, transaction) {
   td.getElementsByClassName("editinput")[0].style.display = "block";
   td.getElementsByClassName("editinput")[0].focus();
   td.getElementsByClassName("showspan")[0].style.display = "none";
-
-  clickoutsideevent = window.addEventListener("click", (e) => {
+  clickoutsideevent = document.body.addEventListener("click", (e) => {
     if (!td.contains(e.target)) {
       finishexpenseedit(td, column, transaction);
+      clickoutsideevent = null;
     }
   });
 
-  keyeventlistener = document.addEventListener("keyup", (e) => {
+  keyeventlistener = document.body.addEventListener("keyup", (e) => {
     if (e.key == "Escape") {
       td.getElementsByClassName("editinput")[0].style.display = "none";
       td.getElementsByClassName("showspan")[0].style.display = "block";
@@ -314,22 +314,14 @@ function editincometd(td, column, transaction) {
   td.getElementsByClassName("editinput")[0].style.display = "block";
   td.getElementsByClassName("editinput")[0].focus();
   td.getElementsByClassName("showspan")[0].style.display = "none";
-
-  if (keyeventlistener != null) {
-    removeEventListener("keyup", keyeventlistener);
-  }
-
-  if (clickoutsideevent != null) {
-    removeEventListener("click", clickoutsideevent);
-  }
-
-  clickoutsideevent = window.addEventListener("click", (e) => {
+  clickoutsideevent = document.body.addEventListener("click", (e) => {
     if (!td.contains(e.target)) {
       finishincomeedit(td, column, transaction);
+      clickoutsideevent = null;
     }
   });
 
-  keyeventlistener = document.addEventListener("keyup", (e) => {
+  keyeventlistener = document.body.addEventListener("keyup", (e) => {
     if (e.key == "Escape") {
       td.getElementsByClassName("editinput")[0].style.display = "none";
       td.getElementsByClassName("showspan")[0].style.display = "block";
@@ -341,11 +333,9 @@ function editincometd(td, column, transaction) {
 function finishexpenseedit(td, column, transaction) {
   td.getElementsByClassName("editinput")[0].style.display = "none";
   td.getElementsByClassName("showspan")[0].style.display = "block";
-  removeEventListener("keyup",clickoutsideevent);
-  removeEventListener("click",keyeventlistener);
   keyeventlistener = null;
   clickoutsideevent = null;
-  document.body.replaceWith(document.body.cloneNode(true))
+  document.body.replaceWith(document.body.cloneNode(true));
   transaction[column] = td.getElementsByClassName("editinput")[0].value;
   console.log("new trans: ");
   console.log(transaction);
@@ -355,10 +345,9 @@ function finishexpenseedit(td, column, transaction) {
 function finishincomeedit(td, column, transaction) {
   td.getElementsByClassName("editinput")[0].style.display = "none";
   td.getElementsByClassName("showspan")[0].style.display = "block";
-  removeEventListener("keyup",clickoutsideevent);
-  removeEventListener("click",keyeventlistener);
   keyeventlistener = null;
   clickoutsideevent = null;
+  document.body.replaceWith(document.body.cloneNode(true));
   transaction[column] = td.getElementsByClassName("editinput")[0].value;
   console.log("new trans: ");
   console.log(transaction);
@@ -409,30 +398,20 @@ function addExpense() {
   renderAddOverlay("expense");
 }
 
-//Popup closing eventlistener
-Object.values(document.getElementsByClassName("addPopupWrapper")).forEach(
-  (element) => {
-    element.addEventListener("click", (e) => {
-      if (e.target == e.currentTarget) {
-        element.style.display = "none";
-        removeEventListener("keyup", keyeventlistener);
-      }
-    });
-  }
-);
-
-//Popup rendering
+///Popup rendering
 function renderAddOverlay(type) {
+  document
+    .getElementsByClassName("addPopupWrapper")[0]
+    .addEventListener("click", closePopupOutside, true);
   document.getElementsByClassName("addPopupWrapper")[0].style.display = "flex";
   document.getElementsByClassName("addHead")[0].innerHTML = "Add " + type;
   if (keyeventlistener != null) {
-    removeEventListener("keyup", keyeventlistener);
+    removeEventListener("keyup", keyeventlistener, true);
   }
 
   keyeventlistener = document.addEventListener("keyup", (e) => {
     if (e.key == "Escape") {
       closePopup();
-      removeEventListener("keyup", keyeventlistener);
     }
   });
   document.getElementsByClassName("addSubmit")[0].innerHTML = "Add " + type;
@@ -443,28 +422,27 @@ function renderAddOverlay(type) {
     });
   document
     .getElementsByClassName("cancelSubmit")[0]
-    .addEventListener("click", () => {
-      closePopup();
-    });
+    .addEventListener("click", closePopup, true);
 }
 
 function insertData(type) {
-  if (!document.getElementById("num").value) {
+  if (document.getElementById("num").value == NaN) {
     alert("Enter a amount to proceed!");
     return;
   }
   let amountValue = parseFloat(document.getElementById("num").value);
-  if (!document.getElementById("usage").value) {
+  if (document.getElementById("usage").value == "") {
     alert("Enter a usage to proceed!");
     return;
   }
   let usageValue = document.getElementById("usage").value;
-  if (!document.getElementById("date").value) {
+  if (document.getElementById("date").value == "") {
     alert("Enter a date to proceed!");
     return;
   }
   let dateValue = document.getElementById("date").value;
   let data = { amount: amountValue, usage: usageValue, date: dateValue };
+  console.log(data);
   switch (type) {
     case "income":
       socket.emit("insertIncomeData", data);
@@ -477,13 +455,29 @@ function insertData(type) {
     default:
       console.log("Error occured...");
   }
-  closePopup();
   socket.emit("queryData");
+  closePopup();
 }
 
 function closePopup() {
-  document.getElementsByClassName("addPopupWrapper")[0].style.display = "none";
+  let e = document.getElementsByClassName("addPopupWrapper")[0];
+  e.style.display = "none";
+  e.removeEventListener("click", closePopup, true);
+  e.removeEventListener("keyup", keyeventlistener, true);
+  document
+    .getElementsByClassName("cancelSubmit")[0]
+    .removeEventListener("click", closePopup, true);
   document.getElementById("num").value = null;
   document.getElementById("date").value = null;
   document.getElementById("usage").value = null;
+}
+
+//Tap out of popup
+function closePopupOutside(evt) {
+  let e = document.getElementsByClassName("addPopupWrapper")[0];
+  if (evt.target != e) {
+    return;
+  }
+  e.style.display = "none";
+  e.removeEventListener("click", closePopupOutside, true);
 }
