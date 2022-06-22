@@ -40,6 +40,7 @@ io.on("connection", (socket) => {
     console.log(socket.handshake.address + " disconnected!");
   });
 
+  //Sending full Data 
   socket.on("queryData", () => {
     let response = {};
     console.log(
@@ -65,6 +66,7 @@ io.on("connection", (socket) => {
     });
   });
 
+  //Insert income
   socket.on("insertIncomeData", (data) => {
     console.log(
       "Client " +
@@ -90,6 +92,7 @@ io.on("connection", (socket) => {
     });
   });
 
+  //Insert expense
   socket.on("insertExpenseData", (data) => {
     console.log(
       "Client " +
@@ -110,12 +113,13 @@ io.on("connection", (socket) => {
     });
   });
 
+  //Delete income
   socket.on("deleteIncome", (data) => {
     console.log(
       "Client " +
         socket.handshake.address +
         " tries to delete Income transaction " +
-        data
+        data._id
     );
     console.log("Connecting to MongoDB...");
     MongoClient.connect(connectionUrl, (err, db) => {
@@ -132,6 +136,7 @@ io.on("connection", (socket) => {
     });
   });
 
+  //Delete expense
   socket.on("deleteExpense", (data) => {
     console.log(
       "Client " +
@@ -154,6 +159,8 @@ io.on("connection", (socket) => {
     });
   });
 
+
+  //Edit income
   socket.on("editIncome", (data) => {
     console.log(
       "Client " +
@@ -162,6 +169,8 @@ io.on("connection", (socket) => {
         data._id +
         "\nConnecting to MongoDB..."
     );
+    let transid = data._id;
+    delete data._id;
     MongoClient.connect(connectionUrl, (err, db) => {
       if (err) throw err;
       console.log("Connection successfull! Executing update command...");
@@ -169,8 +178,8 @@ io.on("connection", (socket) => {
       dataBase
         .collection("accounterIncome")
         .updateOne(
-          { _id: new ObjectId(data._id) },
-          data,
+          { _id: new ObjectId(transid) },
+          {$set: data},
           { upsert: false },
           (err, res) => {
             if (err) throw err;
@@ -181,6 +190,7 @@ io.on("connection", (socket) => {
     });
   });
 
+  //Edit expense
   socket.on("editExpense", (data) => {
     console.log(
       "Client " +
@@ -189,6 +199,8 @@ io.on("connection", (socket) => {
         data._id +
         "\nConnecting to MongoDB..."
     );
+    let transid = data._id;
+    delete data._id;
     MongoClient.connect(connectionUrl, (err, db) => {
       if (err) throw err;
       console.log("Connection successfull! Executing update command...");
@@ -196,7 +208,7 @@ io.on("connection", (socket) => {
       dataBase
         .collection("accounterExpenses")
         .updateOne(
-          { _id: new ObjectId(data._id) },
+          { _id: new ObjectId(transid) },
           { $set: data },
           { upsert: false },
           (err, res) => {
@@ -209,6 +221,7 @@ io.on("connection", (socket) => {
   });
 });
 
+//Start server
 server.listen(8080, () => {
   console.log("listening on: 8080");
 });

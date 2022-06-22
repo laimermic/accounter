@@ -8,6 +8,9 @@
   </head>
 
   <body>
+    <div class="backImgWrapper">
+      <img src="./img/background.svg" class="backImg"></img>
+    </div>
     <h1>Accounter</h1>
     <div class="loadingwrapper">
         <img src="./img/loading.svg" alt="">
@@ -30,27 +33,25 @@
     </div>
     <div class="addPopupWrapper">
       <div class="addPopup"><span class="addHead"></span>
-      <div class="addInput">
-        <div class="inputWrapper">
-          <input type="text" id="usage"/>
-          <label for="usage">Usage</label>
-        </div>
-        <div class="inputWrapper">
-          <input type="number" step="0.01" id="num"/>
-          <label for="num">Amount</label>
-        </div>
-        <div class="inputWrapper">
-          <input type="date" id="date"/>
-          <label for="date">Date</label>
-        </div>
-        <div class="submitWrapper">
-          <button class="addSubmit"></button>
-          <button class="cancelSubmit">Cancel</button>
+        <div class="addInput">
+          <div class="inputWrapper">
+            <input type="text" id="usage"/>
+            <label for="usage">Usage</label>
+          </div>
+          <div class="inputWrapper">
+            <input type="number" step="0.01" id="num"/>
+            <label for="num">Amount</label>
+          </div>
+          <div class="inputWrapper">
+            <input type="date" id="date"/>
+            <label for="date">Date</label>
+          </div>
+          <div class="submitWrapper">
+            <button class="addSubmit"></button>
+            <button class="cancelSubmit">Cancel</button>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="backImgWrapper">
-      <img src="./img/background.svg" class="backImg"/>
     </div>
     <!-- this link is magically provided by socket.io -->
     <script src="/socket.io/socket.io.js"></script>

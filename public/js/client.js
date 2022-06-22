@@ -3,6 +3,7 @@ Global Variables
 */
 
 let keyeventlistener = null;
+let clickoutsideevent = null;
 
 /*
 Realtime Communication connection
@@ -12,7 +13,7 @@ console.log("Connecting to AccounterServices...");
 const socket = io();
 socket.on("connect", () => {
   document.getElementById("statusText").innerHTML =
-    "Requesting transactions...";
+    "Retrieving transactions...";
   console.log("Connected!");
   console.log("Requesting Data...");
   socket.emit("queryData");
@@ -71,16 +72,59 @@ function renderIncomeTable(data) {
     tr.classList.add("dataRow");
 
     let amounttd = document.createElement("td");
-    amounttd.innerHTML = parseFloat(transaction.amount).toFixed(2) + " €";
+    let amountinput = document.createElement("input");
+    let amountspan = document.createElement("span");
+    amountinput.type = "text";
+    amountinput.classList.add("editinput");
+    amountinput.min = 0;
+    amountinput.name = "usage";
+    amountinput.value = parseFloat(transaction.amount).toFixed(2) + " €";
+    amountinput.step = 0.01;
+    amountinput.style.display = "none";
+    amountspan.innerHTML = parseFloat(transaction.amount).toFixed(2) + " €";
+    amountspan.classList.add("showspan");
+    amounttd.appendChild(amountinput);
+    amounttd.appendChild(amountspan);
+    amounttd.ondblclick = function () {
+      editincometd(this, "amount", transaction);
+    };
     amounttd.classList.add("bdLeft");
     tr.appendChild(amounttd);
 
     let usagetd = document.createElement("td");
-    usagetd.innerHTML = transaction.usage;
+    let usageinput = document.createElement("input");
+    let usagespan = document.createElement("span");
+    usageinput.type = "text";
+    usageinput.classList.add("editinput");
+    usageinput.name = "usage";
+    usageinput.value = transaction.usage;
+    usageinput.style.display = "none";
+    usagespan.innerHTML = transaction.usage;
+    usagespan.classList.add("showspan");
+    usagetd.appendChild(usageinput);
+    usagetd.appendChild(usagespan);
+    usagetd.ondblclick = function () {
+      editincometd(this, "usage", transaction);
+    };
     tr.appendChild(usagetd);
 
     let datetd = document.createElement("td");
-    datetd.innerHTML = transaction.date;
+    let dateinput = document.createElement("input");
+    let datespan = document.createElement("span");
+    dateinput.type = "date";
+    dateinput.classList.add("editinput");
+    dateinput.name = "date";
+    dateinput.value = transaction.date;
+    dateinput.style.display = "none";
+    //let date = new Date(transaction.date);
+    dateinput.value = transaction.date;
+    datespan.innerHTML = transaction.date;
+    datespan.classList.add("showspan");
+    datetd.appendChild(dateinput);
+    datetd.appendChild(datespan);
+    datetd.ondblclick = function () {
+      editincometd(this, "date", transaction);
+    };
     tr.appendChild(datetd);
 
     let deltd = document.createElement("td");
@@ -108,8 +152,7 @@ function renderIncomeTable(data) {
     let dummytr = document.createElement("tr");
     dummytr.classList.add("spacerrow");
     tbody.appendChild(dummytr);
-  });
-
+  })
   table.appendChild(tbody);
   document.getElementsByClassName("accountIncome")[0].innerHTML = "";
   document.getElementsByClassName("accountIncome")[0].appendChild(table);
@@ -160,7 +203,22 @@ function renderExpensesTable(data) {
     tr.classList.add("dataRow");
 
     let amounttd = document.createElement("td");
-    amounttd.innerHTML = parseFloat(transaction.amount).toFixed(2) + " €";
+    let amountinput = document.createElement("input");
+    let amountspan = document.createElement("span");
+    amountinput.type = "text";
+    amountinput.classList.add("editinput");
+    amountinput.min = 0;
+    amountinput.name = "usage";
+    amountinput.value = parseFloat(transaction.amount).toFixed(2) + " €";
+    amountinput.step = 0.01;
+    amountinput.style.display = "none";
+    amountspan.innerHTML = parseFloat(transaction.amount).toFixed(2) + " €";
+    amountspan.classList.add("showspan");
+    amounttd.appendChild(amountinput);
+    amounttd.appendChild(amountspan);
+    amounttd.ondblclick = function () {
+      editexpensetd(this, "amount", transaction);
+    };
     amounttd.classList.add("bdLeft");
     tr.appendChild(amounttd);
 
@@ -169,10 +227,8 @@ function renderExpensesTable(data) {
     let usagespan = document.createElement("span");
     usageinput.type = "text";
     usageinput.classList.add("editinput");
-    usageinput.min = 0;
     usageinput.name = "usage";
     usageinput.value = transaction.usage;
-    usageinput.step = 0.01;
     usageinput.style.display = "none";
     usagespan.innerHTML = transaction.usage;
     usagespan.classList.add("showspan");
@@ -188,10 +244,8 @@ function renderExpensesTable(data) {
     let datespan = document.createElement("span");
     dateinput.type = "date";
     dateinput.classList.add("editinput");
-    dateinput.min = 0;
     dateinput.name = "date";
     dateinput.value = transaction.date;
-    dateinput.step = 0.01;
     dateinput.style.display = "none";
     //let date = new Date(transaction.date);
     dateinput.value = transaction.date;
@@ -241,9 +295,37 @@ function editexpensetd(td, column, transaction) {
   td.getElementsByClassName("editinput")[0].focus();
   td.getElementsByClassName("showspan")[0].style.display = "none";
 
-  window.addEventListener("click", (e) => {
+  clickoutsideevent = window.addEventListener("click", (e) => {
     if (!td.contains(e.target)) {
       finishexpenseedit(td, column, transaction);
+    }
+  });
+
+  keyeventlistener = document.addEventListener("keyup", (e) => {
+    if (e.key == "Escape") {
+      td.getElementsByClassName("editinput")[0].style.display = "none";
+      td.getElementsByClassName("showspan")[0].style.display = "block";
+      removeEventListener("keyup", keyeventlistener);
+    }
+  });
+}
+
+function editincometd(td, column, transaction) {
+  td.getElementsByClassName("editinput")[0].style.display = "block";
+  td.getElementsByClassName("editinput")[0].focus();
+  td.getElementsByClassName("showspan")[0].style.display = "none";
+
+  if (keyeventlistener != null) {
+    removeEventListener("keyup", keyeventlistener);
+  }
+
+  if (clickoutsideevent != null) {
+    removeEventListener("click", clickoutsideevent);
+  }
+
+  clickoutsideevent = window.addEventListener("click", (e) => {
+    if (!td.contains(e.target)) {
+      finishincomeedit(td, column, transaction);
     }
   });
 
@@ -259,11 +341,28 @@ function editexpensetd(td, column, transaction) {
 function finishexpenseedit(td, column, transaction) {
   td.getElementsByClassName("editinput")[0].style.display = "none";
   td.getElementsByClassName("showspan")[0].style.display = "block";
-
+  removeEventListener("keyup",clickoutsideevent);
+  removeEventListener("click",keyeventlistener);
+  keyeventlistener = null;
+  clickoutsideevent = null;
+  document.body.replaceWith(document.body.cloneNode(true))
   transaction[column] = td.getElementsByClassName("editinput")[0].value;
   console.log("new trans: ");
   console.log(transaction);
   socket.emit("editExpense", transaction);
+}
+
+function finishincomeedit(td, column, transaction) {
+  td.getElementsByClassName("editinput")[0].style.display = "none";
+  td.getElementsByClassName("showspan")[0].style.display = "block";
+  removeEventListener("keyup",clickoutsideevent);
+  removeEventListener("click",keyeventlistener);
+  keyeventlistener = null;
+  clickoutsideevent = null;
+  transaction[column] = td.getElementsByClassName("editinput")[0].value;
+  console.log("new trans: ");
+  console.log(transaction);
+  socket.emit("editIncome", transaction);
 }
 
 function deleteincome(id) {
