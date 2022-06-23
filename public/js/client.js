@@ -37,6 +37,7 @@ socket.on("connect", () => {
       document.getElementById("statusAlertWrapper").classList.add("status_warn");
       document.getElementById("statusAlertText").classList.add("statusAlertText_warn");
     }
+    document.getElementById("alertText").innerHTML = data.msg;
   })
 });
 socket.on("disconnect", () => {
