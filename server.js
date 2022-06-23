@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const http = require("http");
+const { send } = require("process");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
@@ -96,6 +97,7 @@ io.on("connection", (socket) => {
           if (err) throw err;
           console.log(res);
           broadcastdata();
+          sendStatus(true, "Insertion successful!");
         }
       );
     });
@@ -120,6 +122,7 @@ io.on("connection", (socket) => {
       dataBase.collection("accounterExpenses").insertOne(data, (err, res) => {
         if (err) throw err;
         console.log("Insert successful!");
+        sendStatus(true, "Insertion successful!");
         broadcastdata();
       });
     });
@@ -148,7 +151,8 @@ io.on("connection", (socket) => {
             sendStatus(false, "Ran into an error while deleting!");
             throw err;
           }
-          console.log("Deletion successfull!");
+          console.log("Deletion successful!");
+          sendStatus(true, "Deletion successful!");
           broadcastdata();
         });
     });
@@ -177,7 +181,8 @@ io.on("connection", (socket) => {
             sendStatus(false, "Ran into an error while deleting!");
             throw err;
           }
-          console.log("Deletion successfull!");
+          console.log("Deletion successful!");
+          sendStatus(true, "Deletion successful!");
           broadcastdata();
         });
     });
@@ -212,7 +217,8 @@ io.on("connection", (socket) => {
               sendStatus(false, "Ran into an error while updating data!");
               throw err;
             }
-            console.log("Update successful");
+            console.log("Update successful!");
+            sendStatus(true, "Update successful!");
             broadcastdata();
           }
         );
@@ -248,7 +254,8 @@ io.on("connection", (socket) => {
               sendStatus(false, "Ran into an error while updating data!");
               throw err;
             }
-            console.log("Update successful");
+            console.log("Update successful!");
+            sendStatus(true, "Update successful!");
             broadcastdata();
           }
         );
