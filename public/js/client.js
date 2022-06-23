@@ -24,9 +24,20 @@ socket.on("connect", () => {
     renderExpensesTable(result);
     rendertotal(result);
   });
-  socket.on("delete", (data) => {
-    alert("Deletion successful!");
-  });
+  socket.on("responseMsg", (data) => {
+    document.getElementById("statusAlertWrapper").removeAttribute("class");
+    document.getElementById("statusAlerticns").removeAttribute("class");
+    document.getElementById("statusAlertText").removeAttribute("class");
+    if (data.status) {
+     document.getElementById("statusAlerticns").classList.add("icn_suc");
+     document.getElementById("statusAlertWrapper").classList.add("status_suc");
+     document.getElementById("statusAlertText").classList.add("statusAlertText_suc");
+    } else {
+      document.getElementById("statusAlerticns").classList.add("icn_warn");
+      document.getElementById("statusAlertWrapper").classList.add("status_warn");
+      document.getElementById("statusAlertText").classList.add("statusAlertText_warn");
+    }
+  })
 });
 socket.on("disconnect", () => {
   console.log("Connection lost!");
