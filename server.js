@@ -12,6 +12,7 @@ app.use(express.static("public"));
 
 //called on new connection
 io.on("connection", (socket) => {
+  sendStatus(false,"Connected!");
   function broadcastdata() {
     let response = {};
     console.log("broadcastdata has been called!\nConnecting to MongoDB...");

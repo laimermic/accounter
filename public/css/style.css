@@ -388,11 +388,15 @@ label {
 #success-icn {
   height: 30px;
   margin-top: 15px;
+  display: none;
+  margin-left: 15px;
 }
 
 #warning_icn {
   height: 30px;
   margin-top: 15px;
+  display: none;
+  margin-left: 15px;
 }
 
 #statusAlertText {
@@ -426,10 +430,6 @@ label {
 
 .icn_warn {
   border-right: 3px solid orange;
-}
-#warning_icn {
-  display: none;
-  height: 25px;
 }
 
 #alertText {

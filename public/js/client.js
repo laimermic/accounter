@@ -28,14 +28,18 @@ socket.on("connect", () => {
     document.getElementById("statusAlertWrapper").removeAttribute("class");
     document.getElementById("statusAlerticns").removeAttribute("class");
     document.getElementById("statusAlertText").removeAttribute("class");
+    document.getElementById("warning_icn").style.display = "none";
+    document.getElementById("success-icn").style.display = "none";
     if (data.status) {
      document.getElementById("statusAlerticns").classList.add("icn_suc");
      document.getElementById("statusAlertWrapper").classList.add("status_suc");
      document.getElementById("statusAlertText").classList.add("statusAlertText_suc");
+     document.getElementById("success-icn").style.display = "block";
     } else {
       document.getElementById("statusAlerticns").classList.add("icn_warn");
       document.getElementById("statusAlertWrapper").classList.add("status_warn");
       document.getElementById("statusAlertText").classList.add("statusAlertText_warn");
+      document.getElementById("warning_icn").style.display = "block";
     }
     document.getElementById("alertText").innerHTML = data.msg;
   })
