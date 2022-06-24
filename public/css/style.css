@@ -6,6 +6,7 @@ body {
   flex-flow: column;
   align-items: center;
   font-size: 1em;
+  /*overflow: hidden;*/
 }
 
 body button {
@@ -102,6 +103,10 @@ Main Table
 
 .accountTotal {
   column-span: all;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .accountHeading {
@@ -354,7 +359,7 @@ label {
 }
 
 .editinput:focus {
-  background-color: rgb(150, 200, 255);
+  background-color: rgb(180, 220, 255);
   border: none;
   font-weight: bold;
 }
@@ -365,20 +370,23 @@ label {
 
 .statusAlert {
   position: absolute;
-  bottom: 40px;
+  border: 3px solid green;
+  background-color: green;
+  bottom: -20%;
   width: 20%;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /*display: none;*/
 }
 
 #statusAlertWrapper {
-  width: 100%;
+  width: 95%;
   height: 100%;
   display: grid;
   grid-template-columns: 20% 80%;
-  border-collapse: separate;
-}
-
-.status_suc {
-  border: 3px solid green;
+  /* border-collapse: separate; */
 }
 
 .status_warn {
@@ -407,8 +415,6 @@ label {
 
 .statusAlertText_suc {
   background-color: green;
-  border-left: 3px solid green;
-  border-right: 3px solid green;
 }
 
 .statusAlertText_warn {
@@ -434,4 +440,37 @@ label {
 
 #alertText {
   margin-left: 5px;
+}
+
+@keyframes alertAnimation {
+  0% {
+    bottom: -20%;
+  }
+
+  5% {
+    bottom: 40px;
+  }
+  95% {
+    bottom: 40px;
+  }
+  100% {
+    bottom: -20%;
+  }
+}
+
+.animated {
+  animation: alertAnimation 3s ease-in-out 1;
+}
+
+html {
+  overflow: scroll;
+  overflow-x: hidden;
+}
+::-webkit-scrollbar {
+  width: 0; /* Remove scrollbar space */
+  background: transparent; /* Optional: just make scrollbar invisible */
+}
+/* Optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+  background: #ff0000;
 }

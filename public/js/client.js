@@ -26,7 +26,7 @@ socket.on("connect", () => {
   });
   socket.on("responseMsg", (data) => {
     setStatus(data);
-  })
+  });
 });
 function setStatus(data) {
   document.getElementById("statusAlertWrapper").removeAttribute("class");
@@ -34,22 +34,42 @@ function setStatus(data) {
   document.getElementById("statusAlertText").removeAttribute("class");
   document.getElementById("warning_icn").style.display = "none";
   document.getElementById("success-icn").style.display = "none";
+  document
+    .getElementsByClassName("statusAlert")[0]
+    .classList.remove("animated");
   if (data.status) {
-   document.getElementById("statusAlerticns").classList.add("icn_suc");
-   document.getElementById("statusAlertWrapper").classList.add("status_suc");
-   document.getElementById("statusAlertText").classList.add("statusAlertText_suc");
-   document.getElementById("success-icn").style.display = "block";
+    document.getElementById("statusAlerticns").classList.add("icn_suc");
+    document.getElementById("statusAlertWrapper").classList.add("status_suc");
+    document
+      .getElementById("statusAlertText")
+      .classList.add("statusAlertText_suc");
+    document.getElementById("success-icn").style.display = "block";
+    document.getElementsByClassName("statusAlert")[0].style.backgroundColor =
+      "green";
+    document.getElementsByClassName("statusAlert")[0].style.borderColor =
+      "green";
   } else {
     document.getElementById("statusAlerticns").classList.add("icn_warn");
     document.getElementById("statusAlertWrapper").classList.add("status_warn");
-    document.getElementById("statusAlertText").classList.add("statusAlertText_warn");
+    document
+      .getElementById("statusAlertText")
+      .classList.add("statusAlertText_warn");
     document.getElementById("warning_icn").style.display = "block";
+    document.getElementsByClassName("statusAlert")[0].style.backgroundColor =
+      "orange";
+    document.getElementsByClassName("statusAlert")[0].style.borderColor =
+      "orange";
   }
   document.getElementById("alertText").innerHTML = data.msg;
+  document.getElementsByClassName("statusAlert")[0].style.display = "block";
+  document.getElementsByClassName("statusAlert")[0].classList.add("animated");
+  setTimeout(() => {
+    document.getElementsByClassName("statusAlert")[0].style.display = "none";
+  }, 5000);
 }
 socket.on("disconnect", () => {
   console.log("Connection lost!");
-  setStatus({status: false,msg: "Connection lost!"})
+  setStatus({ status: false, msg: "Connection lost!" });
   document.getElementById("statusText").innerHTML =
     "Reconnecting to AccounterServices...";
   document.getElementsByClassName("loadingwrapper")[0].style.display = "grid";
@@ -365,11 +385,22 @@ function finishexpenseedit(td, column, transaction) {
   td.getElementsByClassName("showspan")[0].style.display = "block";
   keyeventlistener = null;
   clickoutsideevent = null;
-  document.body.replaceWith(document.body.cloneNode(true));
-  transaction[column] = td.getElementsByClassName("editinput")[0].value;
-  console.log("new trans: ");
-  console.log(transaction);
-  socket.emit("editExpense", transaction);
+  let newval = td.getElementsByClassName("editinput")[0].value;
+  if (newval != transaction[column]) {
+    transaction[column] = newval;
+    console.log("sending updated transaction:");
+    console.log(transaction);
+    socket.emit("editExpense", transaction);
+  } else {
+    console.log("not sending transaction. value not updated");
+  }
+  document
+    .getElementsByClassName("accountWrapper")[0]
+    .replaceWith(
+      document.getElementsByClassName("accountWrapper").cloneNode(true)
+    );
+  //document.body.replaceWith(document.body.cloneNode(true));
+  socket.emit("queryData");
 }
 
 function finishincomeedit(td, column, transaction) {
@@ -377,11 +408,21 @@ function finishincomeedit(td, column, transaction) {
   td.getElementsByClassName("showspan")[0].style.display = "block";
   keyeventlistener = null;
   clickoutsideevent = null;
-  document.body.replaceWith(document.body.cloneNode(true));
-  transaction[column] = td.getElementsByClassName("editinput")[0].value;
-  console.log("new trans: ");
-  console.log(transaction);
-  socket.emit("editIncome", transaction);
+  let newval = td.getElementsByClassName("editinput")[0].value;
+  if (newval != transaction[column]) {
+    transaction[column] = newval;
+    console.log("sending updated transaction:");
+    console.log(transaction);
+    socket.emit("editIncome", transaction);
+  } else {
+    console.log("not sending transaction. value not updated");
+  }
+  document
+    .getElementsByClassName("accountWrapper")[0]
+    .replaceWith(
+      document.getElementsByClassName("accountWrapper").cloneNode(true)
+    );
+  socket.emit("queryData");
 }
 
 function deleteincome(id) {
@@ -428,13 +469,14 @@ function addExpense() {
   renderAddOverlay("expense");
 }
 
-///Popup rendering
+//Popup rendering
 function renderAddOverlay(type) {
   document
     .getElementsByClassName("addPopupWrapper")[0]
     .addEventListener("click", closePopupOutside, true);
   document.getElementsByClassName("addPopupWrapper")[0].style.display = "flex";
   document.getElementsByClassName("addHead")[0].innerHTML = "Add " + type;
+  document.getElementById("date").value = new Date().toISOString().slice(0, 10);
   if (keyeventlistener != null) {
     removeEventListener("keyup", keyeventlistener, true);
   }
