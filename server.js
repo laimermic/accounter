@@ -19,22 +19,22 @@ io.on("connection", (socket) => {
     MongoClient.connect(connectionUrl, async (err, db) => {
       if (err) {
         sendStatus(false, "Can not connect to database!");
-        throw err;
-      }
-      console.log("Connection successfull!");
-      console.log("Serving Transactions...");
-      let dataBase = db.db("mydb");
-      let accounterIncome = dataBase.collection("accounterIncome");
-      accounterIncome.find({}).toArray(function (err, result) {
-        response.income = result;
-        let accounterExpenses = dataBase.collection("accounterExpenses");
-        accounterExpenses.find({}).toArray(function (err, result2) {
-          response.expenses = result2;
-          socket.broadcast.emit("receiveData", response);
-          socket.emit("receiveData", response);
-          console.log("Transactions served!");
+      } else {
+        console.log("Connection successfull!");
+        console.log("Serving Transactions...");
+        let dataBase = db.db("mydb");
+        let accounterIncome = dataBase.collection("accounterIncome");
+        accounterIncome.find({}).toArray(function (err, result) {
+          response.income = result;
+          let accounterExpenses = dataBase.collection("accounterExpenses");
+          accounterExpenses.find({}).toArray(function (err, result2) {
+            response.expenses = result2;
+            socket.broadcast.emit("receiveData", response);
+            socket.emit("receiveData", response);
+            console.log("Transactions served!");
+          });
         });
-      });
+      }
     });
   }
 
@@ -56,21 +56,21 @@ io.on("connection", (socket) => {
     MongoClient.connect(connectionUrl, async (err, db) => {
       if (err) {
         sendStatus(false, "Can not connect to database!");
-        throw err;
-      }
-      console.log("Connection successfull!");
-      console.log("Serving Transactions...");
-      let dataBase = db.db("mydb");
-      let accounterIncome = dataBase.collection("accounterIncome");
-      accounterIncome.find({}).toArray(function (err, result) {
-        response.income = result;
-        let accounterExpenses = dataBase.collection("accounterExpenses");
-        accounterExpenses.find({}).toArray(function (err, result2) {
-          response.expenses = result2;
-          socket.emit("receiveData", response);
-          console.log("Transactions served!");
+      } else {
+        console.log("Connection successfull!");
+        console.log("Serving Transactions...");
+        let dataBase = db.db("mydb");
+        let accounterIncome = dataBase.collection("accounterIncome");
+        accounterIncome.find({}).toArray(function (err, result) {
+          response.income = result;
+          let accounterExpenses = dataBase.collection("accounterExpenses");
+          accounterExpenses.find({}).toArray(function (err, result2) {
+            response.expenses = result2;
+            socket.emit("receiveData", response);
+            console.log("Transactions served!");
+          });
         });
-      });
+      }
     });
   });
 
@@ -84,23 +84,26 @@ io.on("connection", (socket) => {
     MongoClient.connect(connectionUrl, (err, db) => {
       if (err) {
         sendStatus(false, "Can not connect to database!");
-        throw err;
+      } else {
+        console.log("Connection successfull!");
+        let dataBase = db.db("mydb");
+        dataBase.collection("accounterIncome").insertOne(
+          {
+            amount: data.amount,
+            usage: data.usage,
+            date: data.date,
+          },
+          (err, res) => {
+            if (err) {
+              sendStatus(false, "Ran into an error while inserting Transaction")
+            } else {
+              console.log(res);
+              broadcastdata();
+              sendStatus(true, "Insertion successful!");
+            }
+          }
+        );
       }
-      console.log("Connection successfull!");
-      let dataBase = db.db("mydb");
-      dataBase.collection("accounterIncome").insertOne(
-        {
-          amount: data.amount,
-          usage: data.usage,
-          date: data.date,
-        },
-        (err, res) => {
-          if (err) throw err;
-          console.log(res);
-          broadcastdata();
-          sendStatus(true, "Insertion successful!");
-        }
-      );
     });
   });
 
@@ -116,16 +119,19 @@ io.on("connection", (socket) => {
     MongoClient.connect(connectionUrl, (err, db) => {
       if (err) {
         sendStatus(false, "Can not connect to database!");
-        throw err;
+      } else {
+        console.log("Connection successfull! Inserting Transaction now...");
+        let dataBase = db.db("mydb");
+        dataBase.collection("accounterExpenses").insertOne(data, (err, res) => {
+          if (err) {
+            sendStatus(false, "Ran into an error while inserting transaction")
+          } else {
+            console.log("Insert successful!");
+            sendStatus(true, "Insertion successful!");
+            broadcastdata();
+          }
+        });
       }
-      console.log("Connection successfull! Inserting Transaction now...");
-      let dataBase = db.db("mydb");
-      dataBase.collection("accounterExpenses").insertOne(data, (err, res) => {
-        if (err) throw err;
-        console.log("Insert successful!");
-        sendStatus(true, "Insertion successful!");
-        broadcastdata();
-      });
     });
   });
 
@@ -141,21 +147,21 @@ io.on("connection", (socket) => {
     MongoClient.connect(connectionUrl, (err, db) => {
       if (err) {
         sendStatus(false, "Can not connect to database!");
-        throw err;
+      } else {
+        console.log("Connection successfull! Executing delete command...");
+        let dataBase = db.db("mydb");
+        dataBase
+          .collection("accounterIncome")
+          .deleteOne({ _id: new ObjectId(data) }, (err, result) => {
+            if (err) {
+              sendStatus(false, "Ran into an error while deleting!");
+            } else {
+              console.log("Deletion successful!");
+              sendStatus(true, "Deletion successful!");
+              broadcastdata();
+            }
+          });
       }
-      console.log("Connection successfull! Executing delete command...");
-      let dataBase = db.db("mydb");
-      dataBase
-        .collection("accounterIncome")
-        .deleteOne({ _id: new ObjectId(data) }, (err, result) => {
-          if (err) {
-            sendStatus(false, "Ran into an error while deleting!");
-            throw err;
-          }
-          console.log("Deletion successful!");
-          sendStatus(true, "Deletion successful!");
-          broadcastdata();
-        });
     });
   });
 
@@ -171,21 +177,21 @@ io.on("connection", (socket) => {
     MongoClient.connect(connectionUrl, (err, db) => {
       if (err) {
         sendStatus(false, "Can not connect to database!");
-        throw err;
+      } else {
+        console.log("Connection successfull");
+        let dataBase = db.db("mydb");
+        dataBase
+          .collection("accounterExpenses")
+          .deleteOne({ _id: new ObjectId(data) }, (err, res) => {
+            if (err) {
+              sendStatus(false, "Ran into an error while deleting!");
+            } else {
+              console.log("Deletion successful!");
+              sendStatus(true, "Deletion successful!");
+              broadcastdata();
+            }
+          });
       }
-      console.log("Connection successfull");
-      let dataBase = db.db("mydb");
-      dataBase
-        .collection("accounterExpenses")
-        .deleteOne({ _id: new ObjectId(data) }, (err, res) => {
-          if (err) {
-            sendStatus(false, "Ran into an error while deleting!");
-            throw err;
-          }
-          console.log("Deletion successful!");
-          sendStatus(true, "Deletion successful!");
-          broadcastdata();
-        });
     });
   });
 
@@ -203,8 +209,7 @@ io.on("connection", (socket) => {
     MongoClient.connect(connectionUrl, (err, db) => {
       if (err) {
         sendStatus(false, "Can not connect to database!");
-        throw err;
-      }
+      } else {
       console.log("Connection successfull! Executing update command...");
       let dataBase = db.db("mydb");
       dataBase
@@ -216,13 +221,14 @@ io.on("connection", (socket) => {
           (err, res) => {
             if (err) {
               sendStatus(false, "Ran into an error while updating data!");
-              throw err;
+            } else {
+              console.log("Update successful!");
+              sendStatus(true, "Update successful!");
+              broadcastdata();
             }
-            console.log("Update successful!");
-            sendStatus(true, "Update successful!");
-            broadcastdata();
           }
         );
+      }
     });
   });
 
@@ -240,26 +246,27 @@ io.on("connection", (socket) => {
     MongoClient.connect(connectionUrl, (err, db) => {
       if (err) {
         sendStatus(false, "Can not connect to database!");
-        throw err;
-      }
-      console.log("Connection successfull! Executing update command...");
-      let dataBase = db.db("mydb");
-      dataBase
-        .collection("accounterExpenses")
-        .updateOne(
-          { _id: new ObjectId(transid) },
-          { $set: data },
-          { upsert: false },
-          (err, res) => {
-            if (err) {
-              sendStatus(false, "Ran into an error while updating data!");
-              throw err;
+      } else {
+        console.log("Connection successfull! Executing update command...");
+        let dataBase = db.db("mydb");
+        dataBase
+          .collection("accounterExpenses")
+          .updateOne(
+            { _id: new ObjectId(transid) },
+            { $set: data },
+            { upsert: false },
+            (err, res) => {
+              if (err) {
+                sendStatus(false, "Ran into an error while updating data!");
+              } else {
+                console.log("Update successful!");
+                sendStatus(true, "Update successful!");
+                broadcastdata();
+              }
             }
-            console.log("Update successful!");
-            sendStatus(true, "Update successful!");
-            broadcastdata();
-          }
-        );
+          );
+      }
+      
     });
   });
 
