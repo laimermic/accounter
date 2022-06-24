@@ -10,5 +10,5 @@ This app allows you to track your income and expenses
 
 ## Creators:
 
-- [limermic](https://github.com/laimermic)
+- [laimermic](https://github.com/laimermic)
 - [AaloFanaa](https://github.com/AaloFanaa)
