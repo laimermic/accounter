@@ -1,0 +1,15 @@
+[{
+  "_id": {
+    "$oid": "62b580258f3206765e26beeb"
+  },
+  "amount": 11.1111111,
+  "usage": "Kinokarten123456789",
+  "date": "2022-06-24"
+},{
+  "_id": {
+    "$oid": "633ae3bf96bb53fe6b3aafcf"
+  },
+  "amount": 69.69,
+  "usage": "Wasser",
+  "date": "2022-10-28"
+}]

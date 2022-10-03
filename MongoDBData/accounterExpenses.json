@@ -1,0 +1,22 @@
+[{
+  "_id": {
+    "$oid": "62b57ff98f3206765e26bee9"
+  },
+  "amount": "25.00",
+  "usage": "Katzenfutter",
+  "date": "2022-06-24"
+},{
+  "_id": {
+    "$oid": "633ae38396bb53fe6b3aafce"
+  },
+  "amount": "5,45",
+  "usage": "React teuer und so",
+  "date": "2022-10-03"
+},{
+  "_id": {
+    "$oid": "633ae3d396bb53fe6b3aafd0"
+  },
+  "amount": 500,
+  "usage": "Katzenstreu",
+  "date": "2022-10-03"
+}]
